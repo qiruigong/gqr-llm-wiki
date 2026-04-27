@@ -7,7 +7,12 @@ REGISTRY_PATH = Path("sources/registry.json")
 
 
 def load() -> dict:
-    return json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
+    try:
+        return json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Registry file not found: {REGISTRY_PATH}")
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Registry file is corrupted: {e}") from e
 
 
 def save(data: dict) -> None:
@@ -76,6 +81,8 @@ def update_status(
             if etag is not None:
                 entry["etag"] = etag
             break
+    else:
+        raise KeyError(f"source_id '{source_id}' not found in registry")
     save(data)
 
 

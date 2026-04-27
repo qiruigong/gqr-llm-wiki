@@ -3,8 +3,6 @@ import pytest
 from pathlib import Path
 from unittest.mock import patch
 
-REGISTRY_PATH = Path("sources/registry.json")
-
 
 @pytest.fixture(autouse=True)
 def clean_registry(tmp_path, monkeypatch):
@@ -76,6 +74,14 @@ def test_update_status():
     result = reg.find("abc12345")
     assert result["status"] == "pending_update"
     assert result["content_hash"] == "newhash1"
+    assert result["last_modified"] == "Tue, 02 Jan 2026 00:00:00 GMT"
+    assert result["etag"] == '"new"'
+
+
+def test_update_status_raises_for_missing_id():
+    import scripts.registry as reg
+    with pytest.raises(KeyError):
+        reg.update_status("does_not_exist", "pending")
 
 
 def test_list_by_status():
