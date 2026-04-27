@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p wiki/pages wiki/assets sources/files scripts .claude/commands docs/superpowers/specs docs/superpowers/plans)",
+      "Bash(touch wiki/pages/.gitkeep wiki/assets/.gitkeep sources/files/.gitkeep)",
+      "Bash(git add *)",
+      "Bash(git commit *)"
+    ]
+  }
+}
