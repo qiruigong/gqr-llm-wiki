@@ -90,6 +90,9 @@ python scripts/fetch.py <SOURCE>
 
 运行以下逻辑（直接调用 Python 或手动更新文件）：
 在 `sources/registry.json` 的 `sources` 数组中添加或更新条目：
+
+> **注意：** 抓取 URL 时，`python scripts/fetch.py` 只返回正文文本。`content_hash` 由 Claude 对该正文的 bytes 计算 SHA-256 前 8 位得出；`last_modified` 和 `etag` 需在抓取时额外发送一次 HEAD 请求获取（或从 fetch 响应头中读取）。file 类型来源三个字段均写 `null`。
+
 ```json
 {
   "id": "<source_id>",
@@ -98,7 +101,10 @@ python scripts/fetch.py <SOURCE>
   "ingested_at": "<ISO时间>",
   "affected_pages": ["<页面1>", "<页面2>"],
   "status": "ingested",
-  "mode": "<MODE>"
+  "mode": "<MODE>",
+  "content_hash": "<抓取时正文内容的SHA-256前8位，file类型为null>",
+  "last_modified": "<抓取URL时HTTP响应的Last-Modified头，无则null，file类型为null>",
+  "etag": "<抓取URL时HTTP响应的ETag头，无则null，file类型为null>"
 }
 ```
 

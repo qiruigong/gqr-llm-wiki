@@ -161,6 +161,26 @@ python scripts/registry.py nonexistent
 
 ---
 
+### `/wiki-sync` — 检测更新并维护待消化列表
+
+检测已 ingest 的 URL 来源是否有内容变化，重新 ingest 有更新的来源，并推荐关联链接。
+
+```
+/wiki-sync
+```
+
+**检测逻辑：**
+1. 优先用 HTTP `ETag` / `Last-Modified` 头快速判断（无需下载全文）
+2. 无头部信息时 fallback 为全文 hash 对比
+
+**待消化列表：**  
+推荐的关联链接可选择加入待消化列表（存于 `sources/registry.json`，`status=pending`）。  
+消化时直接运行：`/wiki-ingest <url>`
+
+**扫描范围：** registry 中 365 天内 ingest 过的所有 URL 来源。
+
+---
+
 ### `/wiki-backup` — 备份项目
 
 将整个项目打包为带时间戳的 ZIP 文件。
@@ -234,4 +254,10 @@ python scripts/backup.py ./backups
 
 # Wiki 健康检查
 python scripts/lint.py
+
+# 检测所有 365 天内 URL 来源的更新
+python scripts/check_updates.py
+
+# 只检测指定 URL
+python scripts/check_updates.py https://example.com/article
 ```
