@@ -3,8 +3,9 @@
 将资料 ingest 进 Wiki 知识库。
 
 **用法：**
-- `/wiki-ingest <url或文件路径>` — persona 筛选模式（默认）
+- `/wiki-ingest <url或文件路径>` — persona 筛选模式（默认），ingest 后推荐关联链接
 - `/wiki-ingest <url或文件路径> --all` — 全量 ingest，跳过筛选
+- `/wiki-ingest <url或文件路径> --no-recommend` — 跳过关联链接推荐步骤
 
 ---
 
@@ -15,6 +16,7 @@
 从用户输入中提取：
 - `SOURCE`：URL 或文件路径
 - `MODE`：若包含 `--all` 则为 `all`，否则为 `persona`
+- `RECOMMEND`：若包含 `--no-recommend` 则为 `false`，否则为 `true`
 
 ### 第二步：检查是否已处理
 
@@ -108,10 +110,55 @@ python scripts/fetch.py <SOURCE>
 }
 ```
 
-### 第十步：汇报结果
+### 第十步：推荐关联链接
+
+若 `RECOMMEND` 为 `false`，跳过此步。
+
+读取 `affected_pages` 中每个 `wiki/pages/*.md` 文件的 `## 来源引用` 章节，收集所有外部 URL。
+
+过滤掉：
+- 已在 registry 中（`status` 为 `ingested` 或 `pending`）的 URL
+- 非 http/https 链接
+
+结合 `persona.md` 判断剩余链接的价值，选出最多 3 条，每条附一句理由：
+
+```
+以下链接与本次 ingest 相关，是否要处理？
+
+[1] https://... — 理由（与 persona 的关联）
+[2] https://... — 理由
+...
+
+每条请输入：a（立刻 ingest）/ b（加待消化列表）/ c（跳过）
+```
+
+对用户输入 `a` 的条目：执行完整 `/wiki-ingest` 流程。
+
+对用户输入 `b` 的条目：在 `sources/registry.json` 中新增条目：
+```json
+{
+  "id": "<compute_id(url)>",
+  "type": "url",
+  "path_or_url": "<url>",
+  "ingested_at": "<当前ISO时间>",
+  "affected_pages": [],
+  "status": "pending",
+  "mode": "persona",
+  "content_hash": null,
+  "last_modified": null,
+  "etag": null
+}
+```
+
+对用户输入 `c` 或回车的条目：跳过。
+
+若无符合条件的推荐链接，静默跳过此步（不向用户展示空列表）。
+
+### 第十一步：汇报结果
 
 向用户汇报：
 > ✅ Ingest 完成
 > - 来源：`<SOURCE>`
 > - 模式：persona 筛选 / 全量
 > - 新增/更新页面：`[[页面1]]`、`[[页面2]]`
+> - 加入待消化列表：B 条（若有）

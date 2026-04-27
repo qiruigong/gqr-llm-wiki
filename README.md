@@ -88,16 +88,18 @@ python scripts/registry.py nonexistent
 将 URL 或本地文件的内容提炼进 Wiki。
 
 ```
-/wiki-ingest <url或文件路径>         # persona 筛选模式（默认）
-/wiki-ingest <url或文件路径> --all   # 全量 ingest，跳过筛选
+/wiki-ingest <url或文件路径>                  # persona 筛选模式（默认），ingest 后推荐关联链接
+/wiki-ingest <url或文件路径> --all            # 全量 ingest，跳过筛选
+/wiki-ingest <url或文件路径> --no-recommend   # 跳过关联链接推荐
 ```
 
 **两种模式的区别：**
 
 | 模式 | 行为 |
 |------|------|
-| 默认（persona） | 根据 `persona.md` 过滤，只保留对你有价值的内容 |
+| 默认（persona） | 根据 `persona.md` 过滤，只保留对你有价值的内容，ingest 后推荐关联链接 |
 | `--all` | 全量处理，不做筛选，适合你明确知道整篇都有用的资料 |
+| `--no-recommend` | 跳过关联链接推荐，适合批量处理时减少交互 |
 
 **示例：**
 
