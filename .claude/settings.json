@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python scripts/fetch.py:*)",
+      "Bash(python scripts/registry.py:*)",
+      "Bash(python scripts/lint.py)",
+      "Bash(python scripts/backup.py:*)",
+      "Bash(pip install:*)"
+    ]
+  }
+}
