@@ -22,9 +22,24 @@ def find(source_id: str) -> dict | None:
     return None
 
 
-def upsert(source_id: str, source_type: str, path_or_url: str,
-           affected_pages: list[str], status: str, mode: str) -> None:
+def list_by_status(status: str) -> list[dict]:
     data = load()
+    return [e for e in data["sources"] if e.get("status") == status]
+
+
+def upsert(
+    source_id: str,
+    source_type: str,
+    path_or_url: str,
+    affected_pages: list[str],
+    status: str,
+    mode: str,
+    content_hash: str | None = None,
+    last_modified: str | None = None,
+    etag: str | None = None,
+) -> None:
+    data = load()
+    existing_entry = next((e for e in data["sources"] if e["id"] == source_id), {})
     entry = {
         "id": source_id,
         "type": source_type,
@@ -33,10 +48,34 @@ def upsert(source_id: str, source_type: str, path_or_url: str,
         "affected_pages": affected_pages,
         "status": status,
         "mode": mode,
+        "content_hash": content_hash if content_hash is not None else existing_entry.get("content_hash"),
+        "last_modified": last_modified if last_modified is not None else existing_entry.get("last_modified"),
+        "etag": etag if etag is not None else existing_entry.get("etag"),
     }
-    existing = [e for e in data["sources"] if e["id"] != source_id]
-    existing.append(entry)
-    data["sources"] = existing
+    others = [e for e in data["sources"] if e["id"] != source_id]
+    others.append(entry)
+    data["sources"] = others
+    save(data)
+
+
+def update_status(
+    source_id: str,
+    status: str,
+    content_hash: str | None = None,
+    last_modified: str | None = None,
+    etag: str | None = None,
+) -> None:
+    data = load()
+    for entry in data["sources"]:
+        if entry["id"] == source_id:
+            entry["status"] = status
+            if content_hash is not None:
+                entry["content_hash"] = content_hash
+            if last_modified is not None:
+                entry["last_modified"] = last_modified
+            if etag is not None:
+                entry["etag"] = etag
+            break
     save(data)
 
 
