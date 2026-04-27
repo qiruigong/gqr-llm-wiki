@@ -15,7 +15,7 @@
 
 从用户输入中提取：
 - `SOURCE`：URL 或文件路径
-- `MODE`：若包含 `--all` 则为 `all`，否则为 `persona`
+- `FILTER`：若包含 `--all` 则为 `all`，否则为 `persona`
 - `RECOMMEND`：若包含 `--no-recommend` 则为 `false`，否则为 `true`
 
 ### 第二步：检查是否已处理
@@ -48,18 +48,18 @@ python scripts/fetch.py <SOURCE>
 
 读取以下文件：
 - `CLAUDE.md`（Wiki 格式规范和行为准则）
-- 若 MODE 为 `persona`：读取 `persona.md`
+- 若 FILTER 为 `persona`：读取 `persona.md`
 
 ### 第五步：处理内容
 
-**若 MODE 为 `persona`：**
+**若 FILTER 为 `persona`：**
 根据 `persona.md` 中的背景、偏好、关注领域，判断内容哪些部分对用户有价值。
 - 若内容完全与用户无关，告知用户：
   > 未发现对你有价值的内容（基于 persona.md 的判断）。建议使用 `--all` 标志进行全量 ingest。
   停止执行。
 - 若有价值内容，只提取有价值的部分继续处理。
 
-**若 MODE 为 `all`：**
+**若 FILTER 为 `all`：**
 直接处理全部内容，不做筛选。
 
 ### 第六步：写入 Wiki 页面
@@ -85,7 +85,7 @@ python scripts/fetch.py <SOURCE>
 
 在文件末尾追加：
 ```
-[ISO时间] ingest | <SOURCE> | <affected_pages逗号分隔> | <MODE>模式
+[ISO时间] ingest | <SOURCE> | <affected_pages逗号分隔> | <FILTER>模式
 ```
 
 ### 第九步：更新 registry.json
@@ -103,7 +103,7 @@ python scripts/fetch.py <SOURCE>
   "ingested_at": "<ISO时间>",
   "affected_pages": ["<页面1>", "<页面2>"],
   "status": "ingested",
-  "mode": "<MODE>",
+  "mode": "<FILTER>",
   "content_hash": "<抓取时正文内容的SHA-256前8位，file类型为null>",
   "last_modified": "<抓取URL时HTTP响应的Last-Modified头，无则null，file类型为null>",
   "etag": "<抓取URL时HTTP响应的ETag头，无则null，file类型为null>"
