@@ -16,16 +16,16 @@ def create_backup(target_dir: str) -> tuple[Path, float]:
     backup_name = f"llm-wiki-backup-{timestamp}.zip"
     backup_path = target / backup_name
 
-    project_root = Path(".")
+    project_root = Path(__file__).parent.parent
     with zipfile.ZipFile(backup_path, "w", zipfile.ZIP_DEFLATED) as zf:
         for file in project_root.rglob("*"):
             if file.is_file():
-                parts = set(file.parts)
-                if parts & EXCLUDE_DIRS:
+                rel = file.relative_to(project_root)
+                if set(rel.parts) & EXCLUDE_DIRS:
                     continue
                 if file.name in EXCLUDE_FILES:
                     continue
-                zf.write(file)
+                zf.write(file, rel)
 
     size_mb = backup_path.stat().st_size / (1024 * 1024)
     return backup_path, size_mb

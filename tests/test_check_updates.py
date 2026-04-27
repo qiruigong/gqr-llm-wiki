@@ -94,9 +94,8 @@ def test_unchanged_by_last_modified():
 def test_changed_by_etag():
     from scripts.check_updates import check_url
     head_resp = make_head_response(etag='"new-etag"')
-    get_resp = make_get_response("new content")
     with patch("requests.head", return_value=head_resp), \
-         patch("requests.get", return_value=get_resp):
+         patch("scripts.check_updates.fetch_url", return_value="new content"):
         result = check_url("aabbccdd", "https://example.com/article")
     assert result == ("CHANGED", "")
 
@@ -111,9 +110,8 @@ def test_unchanged_by_hash_when_no_headers():
     reg.update_status("11223344", "ingested", content_hash=content_hash)
 
     head_resp = make_head_response()
-    get_resp = make_get_response(content)
     with patch("requests.head", return_value=head_resp), \
-         patch("requests.get", return_value=get_resp):
+         patch("scripts.check_updates.fetch_url", return_value=content):
         result = check_url("11223344", "https://example.com/no-headers")
     assert result == ("UNCHANGED", "")
 
@@ -121,9 +119,8 @@ def test_unchanged_by_hash_when_no_headers():
 def test_changed_by_hash_when_no_headers():
     from scripts.check_updates import check_url
     head_resp = make_head_response()
-    get_resp = make_get_response("completely new content xyz")
     with patch("requests.head", return_value=head_resp), \
-         patch("requests.get", return_value=get_resp):
+         patch("scripts.check_updates.fetch_url", return_value="completely new content xyz"):
         result = check_url("11223344", "https://example.com/no-headers")
     assert result == ("CHANGED", "")
 
@@ -146,13 +143,19 @@ def test_scan_excludes_entries_older_than_365_days():
 
 def test_error_format_in_scan_output(capsys):
     from scripts.check_updates import scan
-    import requests
-    with patch("requests.head", side_effect=requests.RequestException("timeout")):
+    import requests as req
+    with patch("requests.head", side_effect=req.RequestException("timeout")):
         scan()
     captured = capsys.readouterr()
     lines = [l for l in captured.out.strip().split("\n") if l.startswith("ERROR")]
     assert len(lines) > 0
-    # 格式应为 ERROR:<id>:<url>:<reason>
-    parts = lines[0].split(":")
+    # 格式为 ERROR:<id>:<url>:<reason>，用 split(":", 3) 避免 URL 中的 : 干扰
+    parts = lines[0].split(":", 3)
+    assert len(parts) == 4
     assert parts[0] == "ERROR"
-    assert parts[1] == "aabbccdd"   # 第一个候选条目的 id
+    assert parts[1] == "aabbccdd"
+    # parts[2] is the URL scheme ("https"), parts[3] starts with "//example.com/..."
+    # reconstruct URL from parts[2] and parts[3] to verify example.com is present
+    url_and_reason = parts[2] + ":" + parts[3]
+    assert "example.com" in url_and_reason
+    assert parts[3]  # reason 非空

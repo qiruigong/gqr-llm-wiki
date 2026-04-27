@@ -8,6 +8,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 import scripts.registry as registry
+from scripts.fetch import fetch_url
 
 REGISTRY_PATH = registry.REGISTRY_PATH
 MAX_AGE_DAYS = 365
@@ -17,8 +18,8 @@ def _norm_header(s: str) -> str:
     return re.sub(r'\s+', ' ', s.strip())
 
 
-def compute_hash(content: bytes) -> str:
-    return hashlib.sha256(content).hexdigest()[:8]
+def compute_hash(content: str) -> str:
+    return hashlib.sha256(content.encode()).hexdigest()[:8]
 
 
 def get_candidates() -> list[dict]:
@@ -56,19 +57,22 @@ def check_url(source_id: str, url: str) -> tuple[str, str]:
     resp_etag = head_resp.headers.get("ETag")
     resp_lm = head_resp.headers.get("Last-Modified")
 
-    if resp_etag and stored_etag and _norm_header(resp_etag) == _norm_header(stored_etag):
-        return ("UNCHANGED", "")
-
-    if resp_lm and stored_lm and _norm_header(resp_lm) == _norm_header(stored_lm):
-        return ("UNCHANGED", "")
+    # 若双方都有 ETag，ETag 单独决定结果，不再 fallback 到 Last-Modified
+    if resp_etag and stored_etag:
+        if _norm_header(resp_etag) == _norm_header(stored_etag):
+            return ("UNCHANGED", "")
+        # ETag 不一致，直接进入 hash 检查，不看 Last-Modified
+    elif resp_lm and stored_lm:
+        if _norm_header(resp_lm) == _norm_header(stored_lm):
+            return ("UNCHANGED", "")
+        # Last-Modified 不一致，进入 hash 检查
 
     try:
-        get_resp = requests.get(url, timeout=30, headers={"User-Agent": "Mozilla/5.0"})
-        get_resp.raise_for_status()
-    except requests.RequestException as e:
+        new_content = fetch_url(url)
+    except Exception as e:
         return ("ERROR", str(e))
 
-    new_hash = compute_hash(get_resp.content)
+    new_hash = compute_hash(new_content)
     stored_hash = entry.get("content_hash")
 
     if stored_hash and new_hash == stored_hash:

@@ -94,3 +94,17 @@ def test_list_by_status():
     assert "id1" in ids
     assert "id3" in ids
     assert "id2" not in ids
+
+
+def test_find_returns_none_when_registry_missing(tmp_path, monkeypatch):
+    import scripts.registry as reg
+    missing = tmp_path / "no_registry.json"
+    monkeypatch.setattr("scripts.registry.REGISTRY_PATH", missing)
+    assert reg.find("any_id") is None
+
+
+def test_list_by_status_returns_empty_when_registry_missing(tmp_path, monkeypatch):
+    import scripts.registry as reg
+    missing = tmp_path / "no_registry.json"
+    monkeypatch.setattr("scripts.registry.REGISTRY_PATH", missing)
+    assert reg.list_by_status("ingested") == []

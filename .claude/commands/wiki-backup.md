@@ -35,4 +35,4 @@ python scripts/backup.py <目标目录>
 > **在新机器上恢复：**
 > 1. 解压 ZIP 文件到目标目录
 > 2. 在 Claude Code 中打开该目录
-> 3. 按照 `CLAUDE.md` 中的"新机器初始化"章节操作
+> 3. 按照 `README.md` 中的"在新机器上恢复"章节操作

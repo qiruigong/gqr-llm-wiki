@@ -51,7 +51,49 @@ python scripts/fetch.py <URL>
 
 同 `/wiki-ingest` 的第七、八、九步，模式记录为 `explore`。
 
-### 第六步：汇报结果
+### 第六步：推荐关联链接
+
+读取本次写入的 Wiki 页面的 `## 来源引用` 章节，收集所有外部 URL。
+
+过滤掉：
+- 已在 registry 中（`status` 为 `ingested` 或 `pending`）的 URL
+- 非 http/https 链接
+
+结合 `persona.md` 判断剩余链接的价值，选出最多 3 条，每条附一句理由：
+
+```
+以下链接与本次探索相关，是否要处理？
+
+[1] https://... — 理由（与 persona 的关联）
+[2] https://... — 理由
+...
+
+每条请输入：a（立刻 ingest）/ b（加待消化列表）/ c（跳过）
+```
+
+对用户输入 `a` 的条目：执行完整 `/wiki-ingest` 流程。
+
+对用户输入 `b` 的条目：在 `sources/registry.json` 中新增条目：
+```json
+{
+  "id": "<compute_id(url)>",
+  "type": "url",
+  "path_or_url": "<url>",
+  "ingested_at": "<当前ISO时间>",
+  "affected_pages": [],
+  "status": "pending",
+  "mode": "persona",
+  "content_hash": null,
+  "last_modified": null,
+  "etag": null
+}
+```
+
+对用户输入 `c` 或回车的条目：跳过。
+
+若无符合条件的推荐链接，静默跳过此步。
+
+### 第七步：汇报结果
 
 > ✅ Explore 完成
 > - 来源：`<URL>`

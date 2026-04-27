@@ -3,19 +3,20 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
-REGISTRY_PATH = Path("sources/registry.json")
+REGISTRY_PATH = Path(__file__).parent.parent / "sources" / "registry.json"
 
 
 def load() -> dict:
     try:
         return json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
     except FileNotFoundError:
-        raise FileNotFoundError(f"Registry file not found: {REGISTRY_PATH}")
+        return {"sources": []}
     except json.JSONDecodeError as e:
         raise ValueError(f"Registry file is corrupted: {e}") from e
 
 
 def save(data: dict) -> None:
+    REGISTRY_PATH.parent.mkdir(parents=True, exist_ok=True)
     REGISTRY_PATH.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
