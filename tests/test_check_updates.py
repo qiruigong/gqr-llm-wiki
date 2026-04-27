@@ -70,6 +70,7 @@ def make_get_response(content="page content", status_code=200):
     resp = MagicMock()
     resp.status_code = status_code
     resp.text = content
+    resp.content = content.encode()
     resp.raise_for_status = MagicMock()
     return resp
 
@@ -79,7 +80,15 @@ def test_unchanged_by_etag():
     head_resp = make_head_response(etag='"old-etag"')
     with patch("requests.head", return_value=head_resp):
         result = check_url("aabbccdd", "https://example.com/article")
-    assert result == "UNCHANGED"
+    assert result == ("UNCHANGED", "")
+
+
+def test_unchanged_by_last_modified():
+    from scripts.check_updates import check_url
+    head_resp = make_head_response(last_modified="Mon, 01 Jan 2026 00:00:00 GMT")
+    with patch("requests.head", return_value=head_resp):
+        result = check_url("aabbccdd", "https://example.com/article")
+    assert result == ("UNCHANGED", "")
 
 
 def test_changed_by_etag():
@@ -89,7 +98,7 @@ def test_changed_by_etag():
     with patch("requests.head", return_value=head_resp), \
          patch("requests.get", return_value=get_resp):
         result = check_url("aabbccdd", "https://example.com/article")
-    assert result == "CHANGED"
+    assert result == ("CHANGED", "")
 
 
 def test_unchanged_by_hash_when_no_headers():
@@ -106,7 +115,7 @@ def test_unchanged_by_hash_when_no_headers():
     with patch("requests.head", return_value=head_resp), \
          patch("requests.get", return_value=get_resp):
         result = check_url("11223344", "https://example.com/no-headers")
-    assert result == "UNCHANGED"
+    assert result == ("UNCHANGED", "")
 
 
 def test_changed_by_hash_when_no_headers():
@@ -116,7 +125,7 @@ def test_changed_by_hash_when_no_headers():
     with patch("requests.head", return_value=head_resp), \
          patch("requests.get", return_value=get_resp):
         result = check_url("11223344", "https://example.com/no-headers")
-    assert result == "CHANGED"
+    assert result == ("CHANGED", "")
 
 
 def test_error_on_request_failure():
@@ -124,7 +133,7 @@ def test_error_on_request_failure():
     import requests
     with patch("requests.head", side_effect=requests.RequestException("timeout")):
         result = check_url("aabbccdd", "https://example.com/article")
-    assert result.startswith("ERROR")
+    assert result[0] == "ERROR"
 
 
 def test_scan_excludes_entries_older_than_365_days():
