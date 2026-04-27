@@ -18,8 +18,8 @@
 .
 ├── CLAUDE.md              # Agent 宪法：Wiki 格式规范、行为准则（供 LLM 读取）
 ├── persona.md             # 你的个人设定：背景、偏好、关注领域、订阅站点
-├── requirements.txt       # Python 依赖
-├── .env.example           # 环境变量模板
+├── pyproject.toml         # Python 依赖声明（uv 管理）
+├── uv.lock                # 精确依赖锁（所有传递依赖版本快照）
 │
 ├── wiki/
 │   ├── index.md           # 所有页面目录（自动维护）
@@ -34,7 +34,7 @@
 ├── scripts/
 │   ├── fetch.py           # URL 抓取 + 本地文件读取
 │   ├── registry.py        # registry.json 读写
-│   ├── lint.py            # Wiki 健康检查（调用 Anthropic API）
+│   ├── lint.py            # Wiki 结构扫描（孤立页面、缺失章节）
 │   └── backup.py          # 打包备份为带时间戳 ZIP
 │
 └── .claude/
@@ -47,33 +47,46 @@
 
 ### 1. 安装 Python 依赖
 
-```bash
-pip install -r requirements.txt
-```
+本项目使用 [uv](https://docs.astral.sh/uv/) 管理依赖，`uv.lock` 精确锁定了所有传递依赖版本，保证环境可复现。
 
-### 2. 配置 API Key
+**安装 uv（若未安装）：**
 
 ```bash
-cp .env.example .env
+# Windows (PowerShell)
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+
+# macOS / Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-用编辑器打开 `.env`，填入你的 Anthropic API Key：
+**同步依赖（自动创建虚拟环境 `.venv/`）：**
 
-```
-ANTHROPIC_API_KEY=sk-ant-...
+```bash
+uv sync
 ```
 
-### 3. 验证环境
+之后所有 `python` 命令通过 `uv run` 调用，无需手动激活虚拟环境：
+
+```bash
+uv run python scripts/fetch.py https://example.com
+```
+
+> **若不想用 uv：** 也可以用标准 pip，但无法保证传递依赖版本一致：
+> ```bash
+> pip install requests readability-lxml pdfplumber python-dotenv html2text
+> ```
+
+### 2. 验证环境
 
 ```bash
 # 验证 fetch.py：应输出 SOURCE_ID: 开头的行
-python scripts/fetch.py https://example.com
+uv run python scripts/fetch.py https://example.com
 
 # 验证 registry.py：应输出 NOT_FOUND
-python scripts/registry.py nonexistent
+uv run python scripts/registry.py nonexistent
 ```
 
-### 4. 填写个人设定
+### 3. 填写个人设定
 
 编辑 `persona.md`，填入你的背景、关注领域和发展目标。这是 persona 筛选模式的依据，填得越具体，筛选越精准。
 
@@ -232,7 +245,7 @@ python scripts/lint.py
 
 1. 解压备份 ZIP 到目标目录
 2. 在 Claude Code 中打开该目录
-3. 按"快速开始"章节重新初始化（安装依赖 → 配置 API Key → 验证环境）
+3. 按"快速开始"章节重新初始化（`uv sync` → 验证环境 → 填写 persona）
 4. `persona.md` 和所有 Wiki 页面已在备份中，无需重填
 
 ---
@@ -243,23 +256,23 @@ slash commands 内部调用这些脚本，你也可以直接运行：
 
 ```bash
 # 抓取 URL 内容（输出纯文本）
-python scripts/fetch.py https://example.com
+uv run python scripts/fetch.py https://example.com
 
 # 抓取本地 PDF
-python scripts/fetch.py path/to/paper.pdf
+uv run python scripts/fetch.py path/to/paper.pdf
 
 # 查询某个 source_id 的处理记录
-python scripts/registry.py <source_id>
+uv run python scripts/registry.py <source_id>
 
 # 备份到指定目录
-python scripts/backup.py ./backups
+uv run python scripts/backup.py ./backups
 
-# Wiki 健康检查
-python scripts/lint.py
+# Wiki 结构扫描（孤立页面、缺失章节）
+uv run python scripts/lint.py
 
 # 检测所有 365 天内 URL 来源的更新
-python scripts/check_updates.py
+uv run python scripts/check_updates.py
 
 # 只检测指定 URL
-python scripts/check_updates.py https://example.com/article
+uv run python scripts/check_updates.py https://example.com/article
 ```
