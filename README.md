@@ -17,6 +17,7 @@
 ```
 .
 ├── CLAUDE.md              # Agent 宪法：Wiki 格式规范、行为准则（供 LLM 读取）
+├── persona.template.md    # 个人设定模板（复制为 persona.md 后填写）
 ├── persona.md             # 你的个人设定：背景、偏好、关注领域、订阅站点 ⚠️ 已 gitignore
 ├── pyproject.toml         # Python 依赖声明（uv 管理）
 ├── uv.lock                # 精确依赖锁（所有传递依赖版本快照）
@@ -90,7 +91,13 @@ uv run python scripts/registry.py nonexistent
 
 ### 3. 填写个人设定
 
-编辑 `persona.md`，填入你的背景、关注领域和发展目标。这是 persona 筛选模式的依据，填得越具体，筛选越精准。
+`persona.md` 已加入 `.gitignore`，不会进入版本控制，需要你自行创建：
+
+```bash
+cp persona.template.md persona.md
+```
+
+然后编辑 `persona.md`，填入你的背景、关注领域和发展目标。填得越具体，persona 筛选模式的结果越精准。
 
 完成以上步骤后，在 Claude Code 中即可使用所有 `/wiki-*` 命令。
 
@@ -248,8 +255,8 @@ python scripts/lint.py
 
 1. 解压备份 ZIP 到目标目录
 2. 在 Claude Code 中打开该目录
-3. 按"快速开始"章节重新初始化（`uv sync` → 验证环境 → 填写 persona）
-4. `persona.md` 和所有 Wiki 页面已在备份中，无需重填
+3. 运行 `uv sync` 重建虚拟环境（见"快速开始"章节）
+4. `persona.md` 和所有 Wiki 页面已在备份中，无需重建
 
 ---
 
