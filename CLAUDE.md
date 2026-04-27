@@ -1,35 +1,7 @@
 # Wiki Agent 宪法
 
-本文件定义知识库管理的所有规范和行为准则。所有 slash commands 执行时必须遵守。
-
----
-
-## 新机器初始化
-
-当你在新机器上第一次打开此项目，请按以下步骤初始化：
-
-1. **安装 Python 依赖**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-2. **配置 API Key**
-   ```bash
-   cp .env.example .env
-   # 用编辑器打开 .env，填入真实的 ANTHROPIC_API_KEY
-   ```
-
-3. **验证环境**
-   ```bash
-   python scripts/fetch.py https://example.com
-   python scripts/registry.py nonexistent
-   ```
-   第一条命令应输出 `SOURCE_ID:` 开头的行；第二条应输出 `NOT_FOUND`。
-
-4. **填写个人设定**
-   编辑 `persona.md`，填入你的背景、关注领域和发展目标。
-
-完成以上步骤后，可直接使用 `/wiki-ingest`、`/wiki-query`、`/wiki-explore`。
+本文件定义知识库管理的格式规范和行为准则，供所有 slash commands 执行时遵守。
+人类操作指南见 `README.md`。
 
 ---
 
