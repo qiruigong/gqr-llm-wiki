@@ -5,3 +5,15 @@ __pycache__/
 backups/
 .claude/settings.local.json
 .venv/
+
+# 个人知识积累（不进仓库）
+persona.md
+wiki/index.md
+wiki/log.md
+wiki/pages/*
+!wiki/pages/.gitkeep
+wiki/assets/*
+!wiki/assets/.gitkeep
+sources/registry.json
+sources/files/*
+!sources/files/.gitkeep

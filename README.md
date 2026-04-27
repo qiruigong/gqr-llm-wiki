@@ -17,17 +17,17 @@
 ```
 .
 ├── CLAUDE.md              # Agent 宪法：Wiki 格式规范、行为准则（供 LLM 读取）
-├── persona.md             # 你的个人设定：背景、偏好、关注领域、订阅站点
+├── persona.md             # 你的个人设定：背景、偏好、关注领域、订阅站点 ⚠️ 已 gitignore
 ├── pyproject.toml         # Python 依赖声明（uv 管理）
 ├── uv.lock                # 精确依赖锁（所有传递依赖版本快照）
 │
-├── wiki/
+├── wiki/                  # ⚠️ 以下内容已 gitignore，属于个人知识积累
 │   ├── index.md           # 所有页面目录（自动维护）
 │   ├── log.md             # 操作日志（追加 only）
 │   ├── pages/             # Wiki 页面（*.md）
 │   └── assets/            # 图片等附件
 │
-├── sources/
+├── sources/               # ⚠️ 以下内容已 gitignore，属于个人知识积累
 │   ├── registry.json      # 已处理资料的状态记录
 │   └── files/             # 本地上传文件存储
 │
@@ -40,6 +40,8 @@
 └── .claude/
     └── commands/          # Slash commands 定义文件
 ```
+
+> **说明：** `persona.md`、`wiki/`（pages、index、log、assets）、`sources/`（registry.json、files/）均已加入 `.gitignore`，不会进入版本控制。仓库只保存项目框架（脚本、命令定义、规范文档），个人知识积累请使用 `/wiki-backup` 自行备份。
 
 ---
 
