@@ -79,7 +79,7 @@ uv run python scripts/fetch.py https://example.com
 ### 2. 验证环境
 
 ```bash
-# 验证 fetch.py：应输出 SOURCE_ID: 开头的行
+# 验证 fetch.py：应输出 SOURCE_ID:xxxxx 开头的行
 uv run python scripts/fetch.py https://example.com
 
 # 验证 registry.py：应输出 NOT_FOUND
@@ -158,8 +158,9 @@ uv run python scripts/registry.py nonexistent
 比 ingest 更主动——Claude 会判断页面中哪些内容值得收录，并说明理由。
 
 ```
-/wiki-explore <url>    # 探索单个页面
-/wiki-explore          # 批量探索 persona.md 中的订阅站点列表
+/wiki-explore <url>          # 探索单个页面
+/wiki-explore --add <url>    # 将 URL 加入 persona.md 订阅站点列表
+/wiki-explore                # 批量探索 persona.md 中的订阅站点列表
 ```
 
 **与 `/wiki-ingest` 的区别：**
@@ -221,7 +222,7 @@ uv run python scripts/registry.py nonexistent
 
 ## Wiki 健康检查
 
-`lint.py` 独立于 Claude Code 运行，直接调用 Anthropic API，检查 Wiki 中的矛盾、孤立页面和知识缺口。
+`lint.py` 独立于 Claude Code 运行，对 Wiki 做结构扫描（孤立页面、缺失章节、缺失 frontmatter），输出机器可读结果供 `/wiki-lint` command 进一步分析。矛盾检测和知识缺口分析由 `/wiki-lint` command 中的 Claude 完成。
 
 ```bash
 python scripts/lint.py

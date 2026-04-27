@@ -99,7 +99,7 @@ python scripts/fetch.py <URL>
 
 ### 第六步：更新 index.md、log.md、registry.json
 
-同 `/wiki-ingest` 的第七、八、九步，模式记录为 `explore`。
+同 `/wiki-ingest` 的第七、八、九步，registry 条目的 `mode` 字段记录为 `explore`。
 
 ### 第七步：推荐关联链接
 

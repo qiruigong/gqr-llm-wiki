@@ -20,7 +20,7 @@ python scripts/check_updates.py
 解析每行输出：
 - `CHANGED:<id>:<url>` — 有更新
 - `UNCHANGED:<id>:<url>` — 无变化
-- `ERROR:<id>:<url>:<原因>` — 抓取失败
+- `ERROR:<id>:<url>:<原因>` — 抓取失败（`<id>` 可能为 `NONE`；`<原因>` 为 `NOT_ELIGIBLE:...` 时含第五段字段，忽略第五段即可）
 
 向用户展示扫描摘要：
 > 扫描 N 个 URL：M 个有更新，P 个无变化，K 个失败
@@ -48,7 +48,7 @@ ingest 完成后，调用 registry 更新：将该条目 `status` 改回 `ingest
 - 已在 registry 中（`status` 为 `ingested` 或 `pending`）的 URL
 - 非 http/https 链接
 
-读取 `persona.md`，对剩余链接判断价值，选出最多 5 条，每条附一句理由：
+读取 `persona.md`，对剩余链接判断价值，选出最多 3 条，每条附一句理由：
 
 ```
 以下链接与本次更新相关，是否要处理？
@@ -87,9 +87,9 @@ ingest 完成后，调用 registry 更新：将该条目 `status` 改回 `ingest
 
 ### 第五步：追加 wiki/log.md
 
-在文件末尾追加：
+在文件末尾为每个重新 ingest 的来源追加一条记录（格式与 wiki-ingest 一致）：
 ```
-[ISO时间] sync | 重新ingest M条 | <updated_pages逗号分隔> | -
+[ISO时间] sync | <url> | <affected_pages逗号分隔> | <mode>模式
 ```
 
 ### 第六步：汇报结果
