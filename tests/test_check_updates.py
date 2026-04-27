@@ -133,3 +133,17 @@ def test_scan_excludes_entries_older_than_365_days():
     ids = [c["id"] for c in candidates]
     assert "stale0000" not in ids
     assert "aabbccdd" in ids
+
+
+def test_error_format_in_scan_output(capsys):
+    from scripts.check_updates import scan
+    import requests
+    with patch("requests.head", side_effect=requests.RequestException("timeout")):
+        scan()
+    captured = capsys.readouterr()
+    lines = [l for l in captured.out.strip().split("\n") if l.startswith("ERROR")]
+    assert len(lines) > 0
+    # 格式应为 ERROR:<id>:<url>:<reason>
+    parts = lines[0].split(":")
+    assert parts[0] == "ERROR"
+    assert parts[1] == "aabbccdd"   # 第一个候选条目的 id

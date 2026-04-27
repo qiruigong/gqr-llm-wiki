@@ -97,7 +97,8 @@ def scan(specific_url: str | None = None) -> None:
         elif result == "UNCHANGED":
             print(f"UNCHANGED:{source_id}:{url}")
         else:
-            print(f"{result}:{source_id}:{url}")
+            reason = result[len("ERROR:"):]
+            print(f"ERROR:{source_id}:{url}:{reason}")
 
 
 if __name__ == "__main__":
