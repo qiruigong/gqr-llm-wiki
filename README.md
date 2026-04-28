@@ -38,11 +38,14 @@
 │   ├── lint.py            # Wiki 结构扫描（孤立页面、缺失章节）
 │   └── backup.py          # 打包备份为带时间戳 ZIP
 │
+├── skills/
+│   └── wiki-query.md      # wiki-query skill 源文件（需手动复制到 ~/.claude/skills/）
+│
 └── .claude/
     └── commands/          # Slash commands 定义文件（wiki-query 为 skill 薄包装）
 ```
 
-> **说明：** `wiki-query` 的完整逻辑存放在用户级 skill `~/.claude/skills/wiki-query.md`，slash command 仅作为触发入口。
+> **说明：** `wiki-query` 的完整逻辑存放在 `skills/wiki-query.md`，需手动复制到 `~/.claude/skills/` 才能生效（见快速开始第 4 步）。slash command 仅作为触发入口。
 
 > **说明：** `persona.md`、`wiki/`（pages、index、log、assets）、`sources/`（registry.json、files/）均已加入 `.gitignore`，不会进入版本控制。仓库只保存项目框架（脚本、命令定义、规范文档），个人知识积累请使用 `/wiki-backup` 自行备份。
 
@@ -100,6 +103,25 @@ cp persona.template.md persona.md
 ```
 
 然后编辑 `persona.md`，填入你的背景、关注领域和发展目标。填得越具体，persona 筛选模式的结果越精准。
+
+### 4. 安装 wiki-query skill
+
+`/wiki-query` 的完整逻辑以 Claude Code skill 形式实现，需复制到用户级 skills 目录才能生效：
+
+```bash
+# macOS / Linux
+cp skills/wiki-query.md ~/.claude/skills/wiki-query.md
+
+# Windows (PowerShell)
+Copy-Item skills\wiki-query.md $env:USERPROFILE\.claude\skills\wiki-query.md
+```
+
+若 `~/.claude/skills/` 目录不存在，先创建：
+
+```bash
+mkdir -p ~/.claude/skills   # macOS / Linux
+mkdir $env:USERPROFILE\.claude\skills  # Windows (PowerShell)
+```
 
 完成以上步骤后，在 Claude Code 中即可使用所有 `/wiki-*` 命令。
 
