@@ -31,11 +31,14 @@ def create_backup(
                 zf.write(item_path, f"knowledge/{item_name}")
                 backed_up.append(item_name)
             elif item_path.is_dir():
+                wrote_any = False
                 for file in item_path.rglob("*"):
                     if file.is_file():
                         rel = file.relative_to(project_root)
-                        zf.write(file, f"knowledge/{rel}")
-                backed_up.append(item_name)
+                        zf.write(file, f"knowledge/{rel.as_posix()}")
+                        wrote_any = True
+                if wrote_any:
+                    backed_up.append(item_name)
 
     size_mb = backup_path.stat().st_size / (1024 * 1024)
     return backup_path, size_mb, backed_up
