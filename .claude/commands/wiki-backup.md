@@ -29,10 +29,13 @@ python scripts/backup.py <目标目录>
 
 ### 第三步：汇报结果
 
-向用户展示备份结果，并提示：
-> ✅ 备份完成：`<备份文件路径>`（`<大小>` MB）
+向用户展示备份结果：
+> ✅ 知识库备份完成：`<备份文件路径>`（`<大小>` MB）
+> 已备份：`<backup.py 输出的第二行内容，即"已备份：xxx">`
 >
-> **在新机器上恢复：**
-> 1. 解压 ZIP 文件到目标目录
-> 2. 在 Claude Code 中打开该目录
-> 3. 按照 `README.md` 中的"在新机器上恢复"章节操作
+> **恢复到新机器：**
+> 1. `git clone <仓库地址>` 并运行 `uv sync`（获取项目框架）
+> 2. 解压此 ZIP，将 `knowledge/` 内的三项复制到项目根目录：
+>    - `knowledge/wiki/`       → `<项目根>/wiki/`
+>    - `knowledge/sources/`    → `<项目根>/sources/`
+>    - `knowledge/persona.md`  → `<项目根>/persona.md`
