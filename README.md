@@ -219,7 +219,7 @@ Skill("wiki-query", "什么是 RAG？它的核心组件有哪些？")
 
 ---
 
-### `/wiki-backup` — 备份项目
+### `/wiki-backup` — 备份知识库
 
 将知识库数据（`wiki/`、`sources/`、`persona.md`）打包为带时间戳的 ZIP 文件。
 
@@ -269,8 +269,8 @@ python scripts/lint.py
 ### 第一步：部署项目框架（通过 git）
 
 ```bash
-git clone https://github.com/qiruigong/gqr-llm-wiki.git
-cd gqr-llm-wiki
+git clone https://github.com/<你的用户名>/<仓库名>.git
+cd <仓库名>
 uv sync
 ```
 
