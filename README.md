@@ -161,6 +161,7 @@ cp persona.template.md persona.md
 - 每个关键信息标注来源：`（来源：[[页面名]]）`
 - 若多页面有冲突，列出冲突不擅自判断
 - 若答案有独立知识价值，会询问是否保存为新 Wiki 页面
+- 追加操作记录到 `wiki/log.md`
 
 **Agent 调用：**
 
