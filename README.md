@@ -269,8 +269,8 @@ python scripts/lint.py
 ### 第一步：部署项目框架（通过 git）
 
 ```bash
-git clone https://github.com/<你的用户名>/<仓库名>.git
-cd <仓库名>
+git clone https://github.com/qiruigong/gqr-llm-wiki.git
+cd gqr-llm-wiki
 uv sync
 ```
 
