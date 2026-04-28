@@ -29,6 +29,9 @@
 
 若失败，告知用户错误原因，记录到 `wiki/log.md`，停止执行。
 
+**若 SOURCE 为本地文件**，将文件复制到 `wiki/assets/`：`cp <SOURCE> wiki/assets/<文件名>`
+后续来源引用使用 `../assets/<文件名>` 路径，确保 Obsidian 可直接打开。
+
 ### 第四步：读取规范文件
 
 读取 `CLAUDE.md`（Wiki 格式规范和行为准则）。若 FILTER 为 `persona`，读取 `persona.md`。

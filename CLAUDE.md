@@ -48,9 +48,24 @@ sources: [来源URL或文件名]
 
 ## 链接规范
 
-- 页面间链接**统一使用** `[[页面名]]` 双括号格式（Obsidian 兼容）
+- 页面间链接**统一使用** `[[文件名]]` 双括号格式，文件名不含路径和 `.md` 后缀（Obsidian 兼容）
+- 需要可读别名时使用 `[[文件名|显示文字]]` 格式，例如：`[[sap-business-ai-platform|SAP Business AI Platform (BAIP)]]`
 - **禁止**使用相对路径链接（如 `[文字](pages/xxx.md)`）
-- index.md 中使用标准 Markdown 链接：`- [页面标题](pages/xxx.md) — 一行摘要`
+- index.md 中使用标准 Markdown 链接：`- [页面标题](pages/文件名.md) — 一行摘要`
+
+---
+
+## 来源引用规范
+
+- **URL 来源**：直接写完整 URL
+  ```markdown
+  - [来源标题](https://example.com/article)
+  ```
+- **本地文件来源**：ingest 时将文件复制到 `wiki/assets/`，引用使用相对路径 `../assets/文件名`
+  ```markdown
+  - [来源标题](../assets/paper.pdf)
+  ```
+- **禁止**在来源引用中使用 `sources/files/` 路径（vault 外部，Obsidian 无法打开）
 
 ---
 

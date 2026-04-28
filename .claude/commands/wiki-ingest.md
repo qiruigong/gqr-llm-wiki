@@ -44,6 +44,12 @@ python scripts/fetch.py <SOURCE>
 
 若命令失败（URL 无法访问、文件不存在、PDF 解析失败），明确告知用户错误原因，记录到 `wiki/log.md`，停止执行。
 
+**若 SOURCE 为本地文件**，将文件复制到 `wiki/assets/`：
+```bash
+cp <SOURCE> wiki/assets/<文件名>
+```
+后续来源引用使用 `../assets/<文件名>` 路径（相对于 `wiki/pages/`），以确保 Obsidian 可直接打开。
+
 ### 第四步：读取规范文件
 
 读取以下文件：
@@ -69,7 +75,7 @@ python scripts/fetch.py <SOURCE>
    - 已有：追加新信息，不覆盖旧内容；冲突信息标注 `⚠️ 待验证`
    - 没有：创建新页面，文件名使用小写英文+连字符
 2. 每个页面包含完整 frontmatter（tags、updated、sources）
-3. 页面间链接使用 `[[页面名]]` 格式
+3. 页面间链接使用 `[[文件名]]` 或 `[[文件名|显示文字]]` 格式
 
 记录所有影响到的页面名称（`affected_pages`）。
 
