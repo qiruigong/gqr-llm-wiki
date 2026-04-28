@@ -5,6 +5,14 @@
 
 ---
 
+## 语言规范
+
+- 页面内容以中文为主
+- 专有名词、产品名称、技术术语保留英文原文，不翻译（例：Content Build、Scope Item、Building Block、Transport、Variant File、Ingest、Persona 等）
+- 反复出现的领域特有名词同样保留英文，避免中英混译造成歧义
+
+---
+
 ## Wiki 页面格式规范
 
 每个 `wiki/pages/*.md` 页面必须包含以下结构：
