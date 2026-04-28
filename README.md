@@ -18,6 +18,8 @@
 
 ## 核心理念
 
+> 灵感来源：[Andrej Karpathy — gist on LLM-based personal knowledge management](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)
+
 - **知识复利**：每次 ingest 的内容都以 Markdown 沉淀下来，下次查询可以直接复用
 - **persona 驱动**：根据你在 `persona.md` 中填写的背景和目标，自动过滤无关内容
 - **Obsidian 兼容**：`wiki/` 目录即是一个 Obsidian vault，双链、Graph View、标签全部可用
