@@ -18,35 +18,40 @@ Wiki 根目录为当前项目目录（包含 `CLAUDE.md` 的目录，即 Claude 
 
 读取 `<WIKI_ROOT>/wiki/index.md`。
 
-若页面列表章节为空（无任何 `- [` 条目），告知用户：
-> Wiki 暂无内容，请先运行 `/wiki-ingest <url或文件>` 添加资料。
-
-停止执行。
+若文件不存在或页面列表章节为空（无任何 `- [` 条目），跳到**第三步 fallback**。
 
 ---
 
-## 第二步：读取用户背景
+## 第二步：搜索相关页面
 
-读取 `<WIKI_ROOT>/persona.md`，了解用户背景和知识偏好，用于后续答案组织方式。
+读取 `<WIKI_ROOT>/persona.md`，了解用户背景和知识偏好（若文件不存在则跳过）。
 
-若文件不存在或内容为空，跳过个性化，以通用技术读者风格组织答案。
+读取 `<WIKI_ROOT>/wiki/index.md`，根据 `QUESTION` 判断哪些页面最相关（按相关度排序，最多取 5 个），逐一读取这些 `<WIKI_ROOT>/wiki/pages/*.md` 文件的完整内容。
 
----
+若找到相关页面，进入**第四步**（Wiki 优先回答）。
 
-## 第三步：搜索相关页面
-
-读取 `<WIKI_ROOT>/wiki/index.md`，根据 `QUESTION` 判断哪些页面最相关（按相关度排序，最多取 5 个）。
-
-然后逐一读取这些 `<WIKI_ROOT>/wiki/pages/*.md` 文件的完整内容。
-
-若无任何相关页面，告知用户：
-> Wiki 中暂无与「<QUESTION>」相关的内容。建议 ingest 以下类型资料：[根据问题给出建议]
-
-停止执行。
+若无任何相关页面，进入**第三步**（fallback）。
 
 ---
 
-## 第四步：综合答案
+## 第三步：Fallback — 用自身能力和 Web 搜索回答
+
+Wiki 中没有与问题直接相关的内容，使用以下方式回答：
+
+1. 若当前 agent 具备 web search 能力，搜索与 `QUESTION` 最相关的资料（最多 3 条），结合搜索结果综合回答
+2. 若无 web search 能力，使用自身训练知识回答
+
+回答后，在答案末尾标注来源性质：
+> （来源：Web 搜索）或（来源：模型知识，截止训练日期）
+
+然后告知用户：
+> Wiki 中暂无相关内容，以上为 fallback 回答。建议将有价值的部分通过 `/wiki-ingest` 收录进 Wiki。
+
+进入**第五步**（跳过第四步）。
+
+---
+
+## 第四步：综合答案（Wiki 优先）
 
 根据读取到的 Wiki 页面内容，结合 `persona.md` 中用户的背景和偏好，综合回答 `QUESTION`：
 - 按用户偏好的风格组织（重实践则多举例，重理论则多分析）
@@ -59,8 +64,8 @@ Wiki 根目录为当前项目目录（包含 `CLAUDE.md` 的目录，即 Claude 
 
 若 `INTERACTIVE` 为 false，跳过此步。
 
-若 `INTERACTIVE` 为 true，且本次查询的综合答案本身具有独立知识价值（例如：用户的问题涉及跨页面综合分析，答案产生了新洞见），询问用户：
-> 这个答案包含有价值的综合分析，是否保存为 Wiki 页面？
+若 `INTERACTIVE` 为 true，且本次答案具有独立知识价值（跨页面综合分析、fallback 中产生了有价值的新内容等），询问用户：
+> 这个答案包含有价值的内容，是否保存为 Wiki 页面？
 
 若用户同意，按 `<WIKI_ROOT>/CLAUDE.md` 规范创建新页面，更新 `<WIKI_ROOT>/wiki/index.md`。
 （不在此步追加 log.md，统一由第六步处理。）
@@ -69,7 +74,9 @@ Wiki 根目录为当前项目目录（包含 `CLAUDE.md` 的目录，即 Claude 
 
 ## 第六步：追加 wiki/log.md
 
-在 `<WIKI_ROOT>/wiki/log.md` 文件末尾追加（将 `YYYY-MM-DDTHH:MM:SS` 替换为当前 UTC 时间）：
+若 `<WIKI_ROOT>/wiki/log.md` 存在，在文件末尾追加（将 `YYYY-MM-DDTHH:MM:SS` 替换为当前 UTC 时间）：
 ```
-[YYYY-MM-DDTHH:MM:SS] query | "<QUESTION>" | <引用页面逗号分隔> | -
+[YYYY-MM-DDTHH:MM:SS] query | "<QUESTION>" | <引用页面逗号分隔，fallback时写"-"> | -
 ```
+
+若 log.md 不存在（Wiki 为空或首次使用），跳过此步。

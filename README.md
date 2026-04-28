@@ -1,6 +1,18 @@
 # LLM Wiki
 
-基于 Claude Code slash commands 的本地个人知识库。你提供资料，LLM 负责整理、提炼、归档成结构化 Markdown；知识在使用中持续积累，不再一次性消耗。
+基于 LLM agent 的本地个人知识库。你提供资料，LLM 负责整理、提炼、归档成结构化 Markdown；知识在使用中持续积累，不再一次性消耗。
+
+**目录**
+
+- [核心理念](#核心理念)
+- [目录结构](#目录结构)
+- [快速开始](#快速开始)
+- [命令参考](#命令参考)
+- [Wiki 健康检查](#wiki-健康检查)
+- [Obsidian 集成](#obsidian-集成)
+- [在新机器上部署](#在新机器上部署)
+- [脚本直接使用](#脚本直接使用)
+- [跨 Agent 迁移](#跨-agent-迁移)
 
 ---
 
@@ -38,11 +50,19 @@
 │   ├── lint.py            # Wiki 结构扫描（孤立页面、缺失章节）
 │   └── backup.py          # 打包备份为带时间戳 ZIP
 │
+├── prompts/               # agent 无关的通用 prompt（跨 agent 迁移用）
+│   ├── wiki-ingest.md
+│   ├── wiki-query.md
+│   ├── wiki-explore.md
+│   ├── wiki-sync.md
+│   ├── wiki-lint.md
+│   └── wiki-backup.md
+│
 ├── skills/
 │   └── wiki-query.md      # wiki-query skill 源文件（需手动复制到 ~/.claude/skills/）
 │
 └── .claude/
-    └── commands/          # Slash commands 定义文件（wiki-query 为 skill 薄包装）
+    └── commands/          # Claude Code slash commands（wiki-query 为 skill 薄包装）
 ```
 
 > **说明：** `wiki-query` 的完整逻辑存放在 `skills/wiki-query.md`，需手动复制到 `~/.claude/skills/` 才能生效（见快速开始第 4 步）。slash command 仅作为触发入口。
@@ -338,3 +358,42 @@ uv run python scripts/check_updates.py
 # 只检测指定 URL
 uv run python scripts/check_updates.py https://example.com/article
 ```
+
+---
+
+## 跨 Agent 迁移
+
+本项目的核心逻辑（`scripts/`、`wiki/`、`sources/`、`CLAUDE.md` 格式规范）不依赖任何特定 agent 软件。真正有 agent 依赖的只有命令入口层：
+
+| 层 | 说明 |
+|---|---|
+| `scripts/` | 纯 Python，无 agent 依赖 |
+| `wiki/`、`sources/` | 纯 Markdown/JSON 数据，无 agent 依赖 |
+| `CLAUDE.md` | Wiki 格式规范，无 agent 依赖（其他 agent 可直接读取） |
+| `prompts/` | agent 无关的通用 prompt，各 agent 均可直接使用 |
+| `.claude/commands/` | Claude Code 专用入口 |
+| `skills/` | Claude Code skill 格式（claude-query 特有） |
+
+### 迁移到其他 agent
+
+**第一步：确认 Python 脚本可用**（无需改动，所有 agent 都可以通过 shell 调用）
+
+**第二步：将 `prompts/` 中的 prompt 接入目标 agent 的命令系统**
+
+`prompts/` 目录中每个文件是一份完整的功能 prompt，去掉了所有 Claude Code 专有语法，可直接用于：
+
+| Agent | 接入方式 |
+|---|---|
+| **Cursor** | 复制 prompt 内容到 `.cursor/rules/`，或粘贴到 Cursor Chat 触发 |
+| **Copilot (VS Code)** | 复制到 `.github/copilot-instructions.md`，或在 `#` 引用文件触发 |
+| **Windsurf / Cline** | 复制 prompt 内容到对应的 rules 或 system prompt 配置文件 |
+| **任意支持系统 prompt 的 agent** | 直接将 prompt 文件内容作为 system prompt 或 user 消息触发 |
+
+**第三步：按目标 agent 的惯例创建命令入口**（可选）
+
+若目标 agent 支持自定义命令或快捷方式，参照 `.claude/commands/` 中的结构，将 `prompts/` 里的逻辑包装为该 agent 的命令格式。
+
+### wiki-query 的特殊处理
+
+`wiki-query` 在 Claude Code 中以 skill 形式实现（`skills/wiki-query.md`），支持通过 `Skill` 工具被其他 agent 程序化调用。迁移到无 skill 系统的 agent 时，直接使用 `prompts/wiki-query.md` 的内容触发即可，行为完全一致。
+
