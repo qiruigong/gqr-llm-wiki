@@ -1,6 +1,11 @@
-# Wiki Agent 宪法
+# Wiki Agent 宪法（公共模板）
 
-本文件定义知识库管理的格式规范和行为准则，供所有 slash commands 执行时遵守。
+> 本文件是提交至 git 的公共模板，定义格式规范与行为准则。
+> 个人本地覆盖请复制为 `ADMIN.md`（已 gitignore），Claude Code 会通过下方 `@ADMIN.md` 自动加载。
+> 若 `ADMIN.md` 不存在，本文件规范直接生效。
+
+@ADMIN.md
+
 人类操作指南见 `README.md`。
 
 ---
