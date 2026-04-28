@@ -39,8 +39,10 @@
 │   └── backup.py          # 打包备份为带时间戳 ZIP
 │
 └── .claude/
-    └── commands/          # Slash commands 定义文件
+    └── commands/          # Slash commands 定义文件（wiki-query 为 skill 薄包装）
 ```
+
+> **说明：** `wiki-query` 的完整逻辑存放在用户级 skill `~/.claude/skills/wiki-query.md`，slash command 仅作为触发入口。
 
 > **说明：** `persona.md`、`wiki/`（pages、index、log、assets）、`sources/`（registry.json、files/）均已加入 `.gitignore`，不会进入版本控制。仓库只保存项目框架（脚本、命令定义、规范文档），个人知识积累请使用 `/wiki-backup` 自行备份。
 
@@ -159,6 +161,16 @@ cp persona.template.md persona.md
 - 每个关键信息标注来源：`（来源：[[页面名]]）`
 - 若多页面有冲突，列出冲突不擅自判断
 - 若答案有独立知识价值，会询问是否保存为新 Wiki 页面
+
+**Agent 调用：**
+
+在其他 agent 或 skill 中，可通过 `Skill` 工具程序化调用：
+
+```
+Skill("wiki-query", "什么是 RAG？它的核心组件有哪些？")
+```
+
+与手动触发的区别：跳过"是否保存为 Wiki 页面"的交互询问，其余行为完全一致（读取 persona、检索页面、综合答案、追加 log.md）。
 
 ---
 
