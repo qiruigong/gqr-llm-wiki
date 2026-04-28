@@ -42,7 +42,9 @@ python scripts/registry.py <source_id>
 python scripts/fetch.py <SOURCE>
 ```
 
-若命令失败（URL 无法访问、文件不存在、PDF 解析失败），明确告知用户错误原因，记录到 `wiki/log.md`，停止执行。
+若命令失败，检查当前会话中是否有可用的 MCP tool 或 skill 能够抓取该 URL（如具备网页抓取、内网访问、SSO 认证等能力的工具）：
+- 若有：使用该工具重新抓取，继续执行
+- 若无：明确告知用户错误原因，记录到 `wiki/log.md`，停止执行
 
 **若 SOURCE 为本地文件**，将文件复制到 `wiki/assets/`：
 ```bash

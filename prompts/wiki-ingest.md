@@ -27,7 +27,9 @@
 
 执行 shell 命令：`python scripts/fetch.py <SOURCE>`
 
-若失败，告知用户错误原因，记录到 `wiki/log.md`，停止执行。
+若失败，检查当前会话中是否有可用的 MCP tool 或 skill 能够抓取该 URL（如具备网页抓取、内网访问、SSO 认证等能力的工具）：
+- 若有：使用该工具重新抓取，继续执行
+- 若无：告知用户错误原因，记录到 `wiki/log.md`，停止执行
 
 **若 SOURCE 为本地文件**，将文件复制到 `wiki/assets/`：`cp <SOURCE> wiki/assets/<文件名>`
 后续来源引用使用 `../assets/<文件名>` 路径，确保 Obsidian 可直接打开。
