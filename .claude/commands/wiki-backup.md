@@ -1,6 +1,6 @@
 # /wiki-backup
 
-将整个 Wiki 项目打包备份到指定目录（默认备份到云盘同步目录）。
+将知识库数据（`wiki/`、`sources/`、`persona.md`）打包备份到指定目录（默认备份到云盘同步目录）。
 
 **用法：**
 - `/wiki-backup` — 备份到 persona.md 中配置的默认备份目录
