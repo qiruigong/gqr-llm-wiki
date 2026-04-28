@@ -25,7 +25,7 @@ def find_orphan_pages(pages: dict[str, str]) -> list[str]:
     for page_name in pages:
         stem = Path(page_name).stem
         referenced = any(
-            f"[[{stem}]]" in content
+            f"[[{stem}]]" in content or f"[[{stem}|" in content
             for name, content in pages.items()
             if name != page_name
         )
@@ -35,6 +35,7 @@ def find_orphan_pages(pages: dict[str, str]) -> list[str]:
 
 
 def find_missing_sections(pages: dict[str, str]) -> dict[str, list[str]]:
+    # Must stay in sync with the page format spec in CLAUDE.md
     required = ["## 摘要", "## 关键要点", "## 来源引用"]
     missing = {}
     for name, content in pages.items():

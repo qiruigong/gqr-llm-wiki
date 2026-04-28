@@ -30,8 +30,7 @@
 
 ```
 .
-├── CLAUDE.md              # Agent 宪法公共模板：格式规范、行为准则（供 LLM 读取，提交至 git）
-├── ADMIN.md               # 你的个人宪法：从 CLAUDE.md 复制后按需修改 ⚠️ 已 gitignore
+├── CLAUDE.md              # Agent 宪法：Wiki 格式规范、行为准则（供 LLM 读取）
 ├── persona.template.md    # 个人设定模板（复制为 persona.md 后填写）
 ├── persona.md             # 你的个人设定：背景、偏好、关注领域、订阅站点 ⚠️ 已 gitignore
 ├── pyproject.toml         # Python 依赖声明（uv 管理）
@@ -51,7 +50,8 @@
 │   ├── fetch.py           # URL 抓取 + 本地文件读取
 │   ├── registry.py        # registry.json 读写
 │   ├── lint.py            # Wiki 结构扫描（孤立页面、缺失章节）
-│   └── backup.py          # 打包备份为带时间戳 ZIP
+│   ├── backup.py          # 打包备份为带时间戳 ZIP
+│   └── check_updates.py   # 检测 URL 来源是否有内容更新
 │
 ├── prompts/               # agent 无关的通用 prompt（跨 agent 迁移用）
 │   ├── wiki-ingest.md
@@ -68,9 +68,9 @@
     └── commands/          # Claude Code slash commands（wiki-query 为 skill 薄包装）
 ```
 
-> **说明：** `wiki-query` 的完整逻辑存放在 `skills/wiki-query.md`，需手动复制到 `~/.claude/skills/` 才能生效（见快速开始第 5 步）。slash command 仅作为触发入口。
+> **说明：** `wiki-query` 的完整逻辑存放在 `skills/wiki-query.md`，需手动复制到 `~/.claude/skills/` 才能生效（见快速开始第 4 步）。slash command 仅作为触发入口。
 
-> **说明：** `ADMIN.md`、`persona.md`、`wiki/`（pages、index、log、assets）、`sources/`（registry.json、files/）均已加入 `.gitignore`，不会进入版本控制。仓库只保存项目框架（脚本、命令定义、规范文档），个人知识积累请使用 `/wiki-backup` 自行备份。
+> **说明：** `persona.md`、`wiki/`（pages、index、log、assets）、`sources/`（registry.json、files/）均已加入 `.gitignore`，不会进入版本控制。仓库只保存项目框架（脚本、命令定义、规范文档），个人知识积累请使用 `/wiki-backup` 自行备份。
 
 ---
 
@@ -127,17 +127,7 @@ cp persona.template.md persona.md
 
 然后编辑 `persona.md`，填入你的背景、关注领域和发展目标。填得越具体，persona 筛选模式的结果越精准。
 
-### 4. 初始化个人宪法
-
-`ADMIN.md` 是你的本地个人宪法，已 gitignore，在此基础上可覆盖或扩展公共规范。初始化时直接从模板复制：
-
-```bash
-cp CLAUDE.md ADMIN.md
-```
-
-之后按需修改 `ADMIN.md`；`CLAUDE.md` 保持公共模板不变，Claude Code 会自动合并加载两者。
-
-### 5. 安装 wiki-query skill
+### 4. 安装 wiki-query skill
 
 `/wiki-query` 的完整逻辑以 Claude Code skill 形式实现，需复制到用户级 skills 目录才能生效：
 

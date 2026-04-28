@@ -31,14 +31,22 @@
 
 用户选择：a（立刻 ingest）/ b（加待消化列表）/ c（跳过）
 
-### 第四步：追加 wiki/log.md
+### 第四步：处理用户选择
+
+对用户输入 `a` 的条目：执行完整 wiki-ingest 流程。
+
+对用户输入 `b` 的条目：在 `sources/registry.json` 中新增条目，`status` 设为 `pending`，`mode` 设为 `persona`。
+
+对用户输入 `c` 或回车的条目：跳过。
+
+### 第五步：追加 wiki/log.md
 
 为每个重新 ingest 的来源追加：
 ```
 [YYYY-MM-DDTHH:MM:SS UTC] sync | <url> | <affected_pages逗号分隔> | <mode>模式
 ```
 
-### 第五步：汇报结果
+### 第六步：汇报结果
 
 ```
 ✅ Sync 完成

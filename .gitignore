@@ -6,11 +6,9 @@ backups/
 .claude/settings.local.json
 .venv/
 
-# 个人本地配置（不进仓库）
-ADMIN.md
-
 # 个人知识积累（不进仓库）
 persona.md
+wiki/lint-report.md
 wiki/index.md
 wiki/log.md
 wiki/pages/*
