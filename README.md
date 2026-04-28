@@ -22,13 +22,13 @@
 ├── pyproject.toml         # Python 依赖声明（uv 管理）
 ├── uv.lock                # 精确依赖锁（所有传递依赖版本快照）
 │
-├── wiki/                  # ⚠️ 以下内容已 gitignore，属于个人知识积累
+├── wiki/                  # ⚠️ 知识库数据，已 gitignore，用 /wiki-backup 备份
 │   ├── index.md           # 所有页面目录（自动维护）
 │   ├── log.md             # 操作日志（追加 only）
 │   ├── pages/             # Wiki 页面（*.md）
 │   └── assets/            # 图片等附件
 │
-├── sources/               # ⚠️ 以下内容已 gitignore，属于个人知识积累
+├── sources/               # ⚠️ 知识库数据，已 gitignore，用 /wiki-backup 备份
 │   ├── registry.json      # 已处理资料的状态记录
 │   └── files/             # 本地上传文件存储
 │
@@ -221,14 +221,14 @@ Skill("wiki-query", "什么是 RAG？它的核心组件有哪些？")
 
 ### `/wiki-backup` — 备份项目
 
-将整个项目打包为带时间戳的 ZIP 文件。
+将知识库数据（`wiki/`、`sources/`、`persona.md`）打包为带时间戳的 ZIP 文件。
 
 ```
 /wiki-backup                  # 备份到 persona.md 中配置的备份目录
 /wiki-backup <目录路径>        # 备份到指定目录
 ```
 
-备份内容包含所有文件，自动排除 `.env`（含密钥）和 `.git/`。
+仅备份知识库数据，项目框架（脚本、commands 等）通过 git 管理，无需重复备份。
 
 **配置默认备份目录：**
 
@@ -264,12 +264,29 @@ python scripts/lint.py
 
 ---
 
-## 在新机器上恢复
+## 在新机器上部署
 
-1. 解压备份 ZIP 到目标目录
-2. 在 Claude Code 中打开该目录
-3. 运行 `uv sync` 重建虚拟环境（见"快速开始"章节）
-4. `persona.md` 和所有 Wiki 页面已在备份中，无需重建
+### 第一步：部署项目框架（通过 git）
+
+```bash
+git clone https://github.com/qiruigong/gqr-llm-wiki.git
+cd gqr-llm-wiki
+uv sync
+```
+
+### 第二步：恢复知识库（通过备份文件，可选）
+
+若有 `/wiki-backup` 导出的 ZIP，解压后将 `knowledge/` 内三项复制到项目根目录：
+
+- `knowledge/wiki/`       → `wiki/`
+- `knowledge/sources/`    → `sources/`
+- `knowledge/persona.md`  → `persona.md`
+
+若无备份（全新部署），跳过此步，从空 wiki 开始：
+
+```bash
+cp persona.template.md persona.md
+```
 
 ---
 
